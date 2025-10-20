@@ -35,6 +35,9 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
             setDebtList([...debtList, newItem])
         }
 
+        console.log(billList)
+        console.log(debtList)
+
         // Reset form
         setFormData({
             type: 'Bill',

@@ -17,8 +17,8 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/bills" element={<Bills />} />
+        <Route path="/" element={<Dashboard billList={billList} debtList={debtList} />} />
+        <Route path="/bills" element={<Bills billList={billList} />} />
         <Route path="/debts" element={<Debts />} />
         <Route path="/allocations" element={<Allocations billList={billList} setBillList={setBillList} debtList={debtList} setDebtList={setDebtList} />} />
         <Route path="*" element={<NotFound />} />

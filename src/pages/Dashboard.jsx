@@ -1,20 +1,10 @@
 import styles from './Dashboard.module.css'
 import Table from '../shared/Table'
 
-function Dashboard() {
-    const billsColumns = ['Bill', 'Cantidad', 'Fecha Debida', 'Pagado?', 'Notas']
-    const billsData = [
-        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
-        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
-        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' }
-    ]
-
-    const debtsColumns = ['Deuda', 'Cantidad Minima', 'Fecha Debida', 'Pagado?', 'Notas']
-    const debtsData = [
-        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
-        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
-        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' }
-    ]
+function Dashboard({ billList, debtList }) {
+    // Define columns statically (consistent across all items)
+    const billColumns = ['Bill', 'Cantidad', 'Fecha Debida', 'Pagado?', 'Notas']
+    const debtColumns = ['Deuda', 'Cantidad Minima', 'Fecha Debida', 'Pagado?', 'Notas']
 
     return (
         <>
@@ -49,15 +39,15 @@ function Dashboard() {
 
             <Table
                 title="Bills"
-                columns={billsColumns}
-                data={billsData}
+                columns={billColumns}
+                data={billList}
                 showCheckboxColumn={true}
             />
 
             <Table
                 title="Deudas"
-                columns={debtsColumns}
-                data={debtsData}
+                columns={debtColumns}
+                data={debtList}
                 showCheckboxColumn={true}
             />
         </>
