@@ -1,6 +1,6 @@
 import './App.css'
 import Header from './shared/Header'
-import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
 
 import { Routes, Route } from 'react-router'
 
@@ -10,7 +10,7 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Dashboard />} />
         {/* <Route path="/debts" element={<Debts />} />
         <Route path="/bills" element={<Bills />} />
         <Route path="/allocations" element={<Allocations />} />
