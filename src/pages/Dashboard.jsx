@@ -1,6 +1,21 @@
 import styles from './Dashboard.module.css'
+import Table from '../shared/Table'
 
 function Dashboard() {
+    const billsColumns = ['Bill', 'Cantidad', 'Fecha Debida', 'Pagado?', 'Notas']
+    const billsData = [
+        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
+        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
+        { Bill: 'Renta', Cantidad: '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' }
+    ]
+
+    const debtsColumns = ['Deuda', 'Cantidad Minima', 'Fecha Debida', 'Pagado?', 'Notas']
+    const debtsData = [
+        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
+        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' },
+        { Deuda: 'Renta', 'Cantidad Minima': '$1,000', 'Fecha Debida': '10/1/2025', Pagado: "❌", Notas: 'Pago de renta' }
+    ]
+
     return (
         <>
             <div className={styles.topContainer}>
@@ -32,77 +47,19 @@ function Dashboard() {
                 <h2>Cantidad a ahorrar: $1,000</h2>
             </div>
 
-            <h2 className={styles.tableTitle}>Billes</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Bill</th>
-                        <th>Cantidad</th>
-                        <th>Fecha Debida</th>
-                        <th>Pagado</th>
-                        <th>Notas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                </tbody>
-            </table>
+            <Table
+                title="Bills"
+                columns={billsColumns}
+                data={billsData}
+                showCheckboxColumn={true}
+            />
 
-            <h2 className={styles.tableTitle}>Deudas</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Deuda</th>
-                        <th>Cantidad Minima</th>
-                        <th>Fecha Debida</th>
-                        <th>Pagado</th>
-                        <th>Notas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                    <tr>
-                        <td>Renta</td>
-                        <td>$1,000</td>
-                        <td>10/1/2025</td>
-                        <td><input type="checkbox" className={styles.checkbox} /></td>
-                        <td>Pago de renta</td>
-                    </tr>
-                </tbody>
-            </table>
+            <Table
+                title="Deudas"
+                columns={debtsColumns}
+                data={debtsData}
+                showCheckboxColumn={true}
+            />
         </>
     )
 }
