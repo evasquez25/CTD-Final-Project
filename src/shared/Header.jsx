@@ -4,11 +4,11 @@ import { NavLink } from 'react-router'
 function Header() {
     return (
         <header>
-            <h1>Welcome Home</h1>
+            <img src="./Logo.png" alt="" />
             <nav>
                 <NavLink to="/" className={({ isActive }) => isActive ? styles.active : styles.inactive}>Dashboard</NavLink>
-                <NavLink to="Debts" className={({ isActive }) => isActive ? styles.active : styles.inactive}>Debts</NavLink>
                 <NavLink to="Bills" className={({ isActive }) => isActive ? styles.active : styles.inactive}>Bills</NavLink>
+                <NavLink to="Debts" className={({ isActive }) => isActive ? styles.active : styles.inactive}>Debts</NavLink>
                 <NavLink to="Allocations" className={({ isActive }) => isActive ? styles.active : styles.inactive}>Allocations</NavLink>
             </nav>
         </header>

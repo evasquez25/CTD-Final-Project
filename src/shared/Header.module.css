@@ -9,6 +9,12 @@ header {
     border-radius: 10px;
 }
 
+img {
+    width: 80px;
+    object-fit: cover;
+    padding: 0.8rem 0 0.8rem 1.5rem;
+}
+
 .active {
     color: #ff0000;
 }
