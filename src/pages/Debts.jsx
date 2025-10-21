@@ -1,7 +1,14 @@
-function Debts() {
+import Table from '../shared/Table'
+
+function Debts({ debtList, debtColumns }) {
     return (
         <div>
-            <h2>Debts</h2>
+            <Table
+                title="Debts"
+                columns={debtColumns}
+                data={debtList}
+                showCheckboxColumn={true}
+            />
         </div>
     )
 }

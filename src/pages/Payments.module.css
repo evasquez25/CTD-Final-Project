@@ -7,7 +7,7 @@
     justify-content: center;
     gap: 2rem;
     flex-wrap: wrap;
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
     padding: 2rem;
     background-color: #f8f9fa;
@@ -18,9 +18,8 @@
 .formItem {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     align-items: center;
-    min-width: 150px;
 }
 
 .formItem label {
@@ -39,6 +38,14 @@
     min-width: 120px;
     background-color: white;
     transition: border-color 0.3s ease;
+}
+
+/* Smaller inputs for Cantidad and Pago Minimo */
+.smallInput {
+    min-width: 80px;
+    max-width: 120px;
+    font-size: 0.9rem;
+    padding: 0.6rem;
 }
 
 .formItem input:focus,

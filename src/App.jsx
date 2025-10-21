@@ -3,7 +3,7 @@ import Header from './shared/Header'
 import Dashboard from './pages/Dashboard'
 import Bills from './pages/Bills'
 import Debts from './pages/Debts'
-import Allocations from './pages/Allocations'
+import Payments from './pages/Payments'
 import NotFound from './pages/NotFound'
 
 import { Routes, Route } from 'react-router'
@@ -13,14 +13,18 @@ function App() {
   const [billList, setBillList] = useState([])
   const [debtList, setDebtList] = useState([])
 
+  // Statically defined for consistency across components
+  const billColumns = ['Nombre', 'Cantidad Mensual', 'Cantidad Quincenal', 'Fecha Debida', 'Pagado?', 'Notas']
+  const debtColumns = ['Nombre', 'Total', 'Total Pagado', 'Restante', 'Pago Minimo', 'Fecha Debida', 'Pagado?', 'Notas']
+
   return (
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Dashboard billList={billList} debtList={debtList} />} />
-        <Route path="/bills" element={<Bills billList={billList} />} />
-        <Route path="/debts" element={<Debts />} />
-        <Route path="/allocations" element={<Allocations billList={billList} setBillList={setBillList} debtList={debtList} setDebtList={setDebtList} />} />
+        <Route path="/" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
+        <Route path="/bills" element={<Bills billList={billList} billColumns={billColumns}/>} />
+        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} />} />
+        <Route path="/payments" element={<Payments billList={billList} setBillList={setBillList} debtList={debtList} setDebtList={setDebtList} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

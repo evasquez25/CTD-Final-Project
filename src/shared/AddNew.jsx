@@ -6,6 +6,7 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
         type: 'Bill',
         category: '',
         amount: '',
+        minAmount: '',
         date: '',
         notes: ''
     })
@@ -21,10 +22,26 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        const newItem = {
-            [formData.type === 'Bill' ? 'Bill' : 'Deuda']: formData.category,
-            Cantidad: `$${formData.amount}`,
-            'Fecha Debida': formData.date,
+        // Format date from YYYY-MM-DD to MM/DD/YYYY
+        const formatDate = (dateString) => {
+            const date = new Date(dateString)
+            return date.toLocaleDateString('en-US') // "10/2/2025"
+        }
+
+        const newItem = formData.type === 'Bill' ? {
+            'Nombre': formData.category,
+            'Cantidad Mensual': formData.amount,
+            'Cantidad Quincenal': formData.amount / 2,
+            'Fecha Debida': formatDate(formData.date),
+            'Pagado?': '❌',
+            Notas: formData.notes
+        } : {
+            'Nombre': formData.category,
+            'Total': formData.amount,
+            'Total Pagado': 0,
+            'Restante': formData.amount,
+            'Pago Minimo': formData.minAmount,
+            'Fecha Debida': formatDate(formData.date),
             'Pagado?': '❌',
             Notas: formData.notes
         }
@@ -35,14 +52,12 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
             setDebtList([...debtList, newItem])
         }
 
-        console.log(billList)
-        console.log(debtList)
-
         // Reset form
         setFormData({
             type: 'Bill',
             category: '',
             amount: '',
+            minAmount: '',
             date: '',
             notes: ''
         })
@@ -90,6 +105,22 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
                         step="0.01"
                         min="0"
                         required
+                        className={styles.smallInput}
+                    />
+                </div>
+
+                <div className={styles.formItem}>
+                    <label htmlFor="minAmount">Pago Minimo (Opcional)</label>
+                    <input
+                        type="number"
+                        id="minAmount"
+                        name="minAmount"
+                        value={formData.minAmount}
+                        onChange={handleInputChange}
+                        placeholder="0.00"
+                        step="0.01"
+                        min="0"
+                        className={styles.smallInput}
                     />
                 </div>
 

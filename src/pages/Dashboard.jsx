@@ -1,10 +1,7 @@
 import styles from './Dashboard.module.css'
 import Table from '../shared/Table'
 
-function Dashboard({ billList, debtList }) {
-    // Define columns statically (consistent across all items)
-    const billColumns = ['Bill', 'Cantidad', 'Fecha Debida', 'Pagado?', 'Notas']
-    const debtColumns = ['Deuda', 'Cantidad Minima', 'Fecha Debida', 'Pagado?', 'Notas']
+function Dashboard({ billList, debtList, billColumns, debtColumns }) {
 
     return (
         <>
