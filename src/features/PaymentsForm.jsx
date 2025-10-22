@@ -29,8 +29,8 @@ function PaymentsForm({ setPayments }) {
 
         const newItem = {
             'Tipo': formData.type,
-            'Nombre': formData.category,
-            'Total': formData.amount,
+            'Categoría': formData.category,
+            'Cantidad': formData.amount,
             'Fecha Debida': formatDate(formData.date),
             Notas: formData.notes
         }

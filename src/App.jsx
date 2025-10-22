@@ -15,16 +15,16 @@ function App() {
 
   // Statically defined for consistency across components
   const billColumns = ['Nombre', 'Cantidad Mensual', 'Cantidad Quincenal', 'Fecha Debida', 'Pagado?', 'Notas']
-  const debtColumns = ['Nombre', 'Total', 'Total Pagado', 'Restante', 'Pago Minimo', 'Fecha Debida', 'Pagado?', 'Notas']
+  const debtColumns = ['Nombre', 'Total', 'Total Pagado', 'Restante', 'Pago Minimo', 'Fecha de Pago', 'Pagado?', 'Notas']
 
   return (
     <div>
       <Header />
       <Routes>
         <Route path="/" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
-        <Route path="/bills" element={<Bills billList={billList} billColumns={billColumns}/>} />
-        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} />} />
-        <Route path="/payments" element={<Payments billList={billList} setBillList={setBillList} debtList={debtList} setDebtList={setDebtList} />} />
+        <Route path="/bills" element={<Bills billList={billList} setBillList={setBillList} billColumns={billColumns}/>} />
+        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} />} />
+        <Route path="/payments" element={<Payments />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

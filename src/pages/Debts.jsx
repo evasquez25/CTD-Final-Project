@@ -1,14 +1,14 @@
 import Table from '../shared/Table'
 import DebtsForm from '../features/DebtsForm'
 
-function Debts({ debtList, debtColumns }) {
+function Debts({ debtList, setDebtList, debtColumns }) {
     return (
         <div>
+            <DebtsForm setDebtList={setDebtList}/>
             <Table
                 title="Debts"
                 columns={debtColumns}
                 data={debtList}
-                showCheckboxColumn={true}
             />
         </div>
     )

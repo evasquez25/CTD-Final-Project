@@ -2,7 +2,7 @@ import Table from '../shared/Table'
 import PaymentsForm from '../features/PaymentsForm'
 import { useState } from 'react'
 
-function Pagos() {
+function Payments() {
     const paymentColumns = ['Tipo', 'Categoría', 'Cantidad', 'Fecha Debida', 'Notas']
     const [payments, setPayments] = useState([])
 
@@ -21,4 +21,4 @@ function Pagos() {
     )
 }
 
-export default Pagos
+export default Payments
