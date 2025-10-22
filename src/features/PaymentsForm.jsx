@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import styles from './Allocations.module.css'
+import styles from './PaymentsForm.module.css'
 
-function Allocations({ billList, setBillList, debtList, setDebtList }) {
+function PaymentsForm({ setPayments }) {
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
         amount: '',
-        minAmount: '',
         date: '',
         notes: ''
     })
@@ -25,39 +24,24 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
         // Format date from YYYY-MM-DD to MM/DD/YYYY
         const formatDate = (dateString) => {
             const date = new Date(dateString)
-            return date.toLocaleDateString('en-US') // "10/2/2025"
+            return date.toLocaleDateString('en-US')
         }
 
-        const newItem = formData.type === 'Bill' ? {
-            'Nombre': formData.category,
-            'Cantidad Mensual': formData.amount,
-            'Cantidad Quincenal': formData.amount / 2,
-            'Fecha Debida': formatDate(formData.date),
-            'Pagado?': '❌',
-            Notas: formData.notes
-        } : {
+        const newItem = {
+            'Tipo': formData.type,
             'Nombre': formData.category,
             'Total': formData.amount,
-            'Total Pagado': 0,
-            'Restante': formData.amount,
-            'Pago Minimo': formData.minAmount,
             'Fecha Debida': formatDate(formData.date),
-            'Pagado?': '❌',
             Notas: formData.notes
         }
 
-        if (formData.type === 'Bill') {
-            setBillList([...billList, newItem])
-        } else {
-            setDebtList([...debtList, newItem])
-        }
+        setPayments(prev => [...prev, newItem])
 
         // Reset form
         setFormData({
             type: 'Bill',
             category: '',
             amount: '',
-            minAmount: '',
             date: '',
             notes: ''
         })
@@ -110,22 +94,7 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
                 </div>
 
                 <div className={styles.formItem}>
-                    <label htmlFor="minAmount">Pago Minimo (Opcional)</label>
-                    <input
-                        type="number"
-                        id="minAmount"
-                        name="minAmount"
-                        value={formData.minAmount}
-                        onChange={handleInputChange}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className={styles.smallInput}
-                    />
-                </div>
-
-                <div className={styles.formItem}>
-                    <label htmlFor="date">Fecha Debida</label>
+                    <label htmlFor="date">Fecha de Pago</label>
                     <input
                         type="date"
                         id="date"
@@ -156,4 +125,4 @@ function Allocations({ billList, setBillList, debtList, setDebtList }) {
     )
 }
 
-export default Allocations
+export default PaymentsForm
