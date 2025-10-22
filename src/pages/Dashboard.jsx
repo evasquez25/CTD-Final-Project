@@ -31,8 +31,15 @@ function Dashboard({ billList, debtList, billColumns, debtColumns }) {
                         </select>
                     </div>
                 </div>
-                <h2>Cantidad a ahorrar: $1,000</h2>
+                <h2>Cantidad a ahorrar: $0</h2>
             </div>
+
+            <Table
+                title="Deudas"
+                columns={debtColumns}
+                data={debtList}
+                showCheckboxColumn={true}
+            />
 
             <Table
                 title="Bills"
@@ -41,12 +48,6 @@ function Dashboard({ billList, debtList, billColumns, debtColumns }) {
                 showCheckboxColumn={true}
             />
 
-            <Table
-                title="Deudas"
-                columns={debtColumns}
-                data={debtList}
-                showCheckboxColumn={true}
-            />
         </>
     )
 }
