@@ -2,7 +2,7 @@ import Table from '../shared/Table'
 import PaymentsForm from '../features/PaymentsForm'
 import { useState } from 'react'
 
-function Payments() {
+function Payments({ paymentsUrl, debtsUrl, token }) {
     const paymentColumns = ['Tipo', 'Categoría', 'Cantidad', 'Fecha de Pago', 'Notas']
     const [payments, setPayments] = useState([])
 
@@ -10,6 +10,9 @@ function Payments() {
         <div>
             <PaymentsForm
                 setPayments={setPayments}
+                paymentsUrl={paymentsUrl}
+                debtsUrl={debtsUrl}
+                token={token}
             />
             <Table 
                 title="Pagos"

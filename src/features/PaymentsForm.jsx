@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import styles from './PaymentsForm.module.css'
 
 const paymentsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_PAYMENTS_TABLE}`
-const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
-const token = `Bearer ${import.meta.env.VITE_PAT}`
 
 // Format date from YYYY-MM-DD to MM/DD/YYYY
 function formatDate(dateString) {
@@ -11,7 +9,7 @@ function formatDate(dateString) {
     return date.toLocaleDateString('en-US')
 }
 
-function PaymentsForm({ setPayments }) {
+function PaymentsForm({ setPayments, debtsUrl, token }) {
     const [debts, setDebts] = useState([])  // [{id, name}]
     const [bills, setBills] = useState([{id: '123', name: 'Coming Soon!'}])  // [{id, name}]
     const [formData, setFormData] = useState({
@@ -30,44 +28,6 @@ function PaymentsForm({ setPayments }) {
         }))
     }
 
-    // Get payments to display
-    useEffect(() => {
-        const fetchPayments = async () => {
-            const options = {
-                method: 'GET',
-                headers: {
-                    Authorization: token,
-                    'Content-Type': 'application/json'
-                }
-            }
-
-            try {
-                const resp = await fetch(encodeURI(paymentsUrl), options)
-                if (!resp.ok) {
-                throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
-                }
-
-                const data = await resp.json()
-                console.log(data)
-
-                const fetchedPayments = data.records.map((record) => {
-                    const payment = {
-                        'Tipo': record.fields.Type,
-                        'Categoría': record.fields.Name,
-                        'Cantidad': record.fields.Amount,
-                        'Fecha de Pago': record.fields.Date,
-                        'Notas': record.fields.Name
-                    }
-                    return payment
-                })
-                setPayments(fetchedPayments)
-            } catch(err) {
-                console.error(err)
-            }
-        }
-        fetchPayments()
-    }, [setPayments])
-
     // Get debts to display
     useEffect(() => {
         const fetchDebts = async () => {
@@ -82,7 +42,7 @@ function PaymentsForm({ setPayments }) {
             try {
                 const resp = await fetch(encodeURI(debtsUrl), options)
                 if (!resp.ok) {
-                throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
+                    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
                 }
 
                 const data = await resp.json()
@@ -101,7 +61,44 @@ function PaymentsForm({ setPayments }) {
             }
         }
         fetchDebts()
-    }, [setDebts])
+    }, [setDebts, debtsUrl, token])
+
+    // Get payments to display on table
+    useEffect(() => {
+        const fetchPayments = async () => {
+            const options = {
+                method: 'GET',
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            try {
+                const resp = await fetch(encodeURI(paymentsUrl), options)
+                if (!resp.ok) {
+                    throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
+                }
+
+                const data = await resp.json()
+
+                const fetchedPayments = data.records.map((record) => {
+                    const payment = {
+                        'Tipo': record.fields.Type,
+                        'Categoría': debts.find(d => d.id === record.fields.Debt[0])?.name,
+                        'Cantidad': record.fields.Amount,
+                        'Fecha de Pago': record.fields.Date,
+                        'Notas': record.fields.Name
+                    }
+                    return payment
+                })
+                setPayments(fetchedPayments)
+            } catch(err) {
+                console.error(err)
+            }
+        }
+        fetchPayments()
+    }, [setPayments, token, debts])
 
     const addPayment = async (data) => {
         const payload = {

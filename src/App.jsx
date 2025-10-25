@@ -9,6 +9,9 @@ import NotFound from './pages/NotFound'
 import { Routes, Route } from 'react-router'
 import { useState } from 'react'
 
+const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
+const token = `Bearer ${import.meta.env.VITE_PAT}`
+
 function App() {
   const [billList, setBillList] = useState([])
   const [debtList, setDebtList] = useState([])
@@ -23,8 +26,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard billColumns={billColumns} debtColumns={debtColumns} billList={billList} debtList={debtList} />} />
         <Route path="/bills" element={<Bills billList={billList} setBillList={setBillList} billColumns={billColumns}/>} />
-        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} />} />
-        <Route path="/payments" element={<Payments />} />
+        <Route path="/debts" element={<Debts debtList={debtList} debtColumns={debtColumns} setDebtList={setDebtList} debtsUrl={debtsUrl} token={token} />} />
+        <Route path="/payments" element={<Payments debtsUrl={debtsUrl} token={token}/>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

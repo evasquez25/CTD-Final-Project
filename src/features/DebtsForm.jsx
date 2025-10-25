@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './DebtsForm.module.css'
 
-function DebtsForm({ setDebtList }) {
+function DebtsForm({ setDebtList, debtsUrl, token }) {
     const [formData, setFormData] = useState({
         category: '',
         amount: '',
@@ -17,6 +17,47 @@ function DebtsForm({ setDebtList }) {
             [name]: value
         }))
     }
+
+    // Get debts to display on table
+    useEffect(() => {
+        const fetchDebts = async () => {
+            const options = {
+                method: 'GET',
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            try {
+                const response = await fetch(debtsUrl, options)
+                if (!response.ok) {
+                    const body = await response.text();
+                    console.error('Error posting data:', response.status, body);
+                    throw new Error('Error posting data');
+                }
+                const data = await response.json()
+
+                const fetchedDebts = data.records.map((record) => {
+                    const debt = {
+                        'Nombre': record.fields.Name,
+                        'Total': record.fields.Total,
+                        'Total Pagado': record.fields['Total Paid'],
+                        'Restante': record.fields.Remaining,
+                        'Pago Minimo': record.fields['Min Payment'],
+                        'Fecha de Pago': record.fields.Date,
+                        'Pagado?': record.fields['Paid?'],
+                        'Notas': record.fields.Notes
+                    }
+                    return debt
+                })
+                setDebtList(fetchedDebts)
+            } catch (error) {
+                console.error('Error fetching debts:', error)
+            }
+        }
+        fetchDebts()
+    }, [debtsUrl, setDebtList, token])
 
     const handleSubmit = (e) => {
         e.preventDefault()
