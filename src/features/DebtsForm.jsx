@@ -3,7 +3,7 @@ import styles from './DebtsForm.module.css'
 
 function DebtsForm({ setDebtList, debtsUrl, token }) {
     const [formData, setFormData] = useState({
-        category: '',
+        name: '',
         amount: '',
         minPayment: '',
         date: '',
@@ -59,7 +59,48 @@ function DebtsForm({ setDebtList, debtsUrl, token }) {
         fetchDebts()
     }, [debtsUrl, setDebtList, token])
 
-    const handleSubmit = (e) => {
+    const addDebt = async (data) => {
+        const payload = {
+            records: [
+                {
+                    fields: {
+                        'Name': data.name,
+                        'Total': Number(data.amount),
+                        'Min Payment': Number(data.minPayment),
+                        'Date': data.date,
+                        'Notes': data.notes
+                    }
+                }
+            ]
+        }
+
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }
+
+        try {
+            const response = await fetch(debtsUrl, options)
+            if (!response.ok) {
+                const body = await response.text();
+                console.error('Error posting data:', response.status, body);
+                throw new Error('Error posting data');
+            }
+
+            const responseData = await response.json()
+            console.log('Debt added successfully:', responseData)
+            return responseData
+        } catch (error) {
+            console.error('Error adding debt:', error)
+            throw error
+        }
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         // Format date from YYYY-MM-DD to MM/DD/YYYY
@@ -69,7 +110,7 @@ function DebtsForm({ setDebtList, debtsUrl, token }) {
         }
 
         const newItem = {
-            'Nombre': formData.category,
+            'Nombre': formData.name,
             'Total': formData.amount,
             'Total Pagado': 0,
             'Restante': formData.amount,
@@ -81,9 +122,17 @@ function DebtsForm({ setDebtList, debtsUrl, token }) {
 
         setDebtList(prev => [...prev, newItem])
 
+        try {
+            await addDebt(formData)
+        } catch (error) {
+            console.error('Error adding debt:', error)
+            // Remove from local state if API call failed
+            setDebtList(prev => prev.filter(item => item !== newItem))
+        }
+
         // Reset form
         setFormData({
-            category: '',
+            name: '',
             amount: '',
             minPayment: '',
             date: '',
@@ -97,12 +146,12 @@ function DebtsForm({ setDebtList, debtsUrl, token }) {
             <form className={styles.form} onSubmit={handleSubmit}>
 
                 <div className={styles.formItem}>
-                    <label htmlFor="category">Nombre</label>
+                    <label htmlFor="name">Nombre</label>
                     <input
                         type="text"
-                        id="category"
-                        name="category"
-                        value={formData.category}
+                        id="name"
+                        name="name"
+                        value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Ej: Amazon Credit Card"
                         required

@@ -157,16 +157,15 @@ function PaymentsForm({ setPayments, debtsUrl, token }) {
 
         try {
             // Send to Airtable with current form data
-            console.log('Form Data: ', formData)
             await addPayment(formData)
 
             // Reset form only after successful API call
-        setFormData({
-            type: 'Bill',
-            category: '',
-            amount: '',
-            date: '',
-            notes: ''
+            setFormData({
+                type: 'Bill',
+                category: '',
+                amount: '',
+                date: '',
+                notes: ''
         })
         } catch (error) {
             console.error('Error adding payment:', error)
