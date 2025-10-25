@@ -5,8 +5,15 @@ const paymentsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}
 const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
 const token = `Bearer ${import.meta.env.VITE_PAT}`
 
+// Format date from YYYY-MM-DD to MM/DD/YYYY
+function formatDate(dateString) {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US')
+}
+
 function PaymentsForm({ setPayments }) {
     const [debts, setDebts] = useState([])  // [{id, name}]
+    const [bills, setBills] = useState([{id: '123', name: 'Coming Soon!'}])  // [{id, name}]
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
@@ -23,43 +30,6 @@ function PaymentsForm({ setPayments }) {
         }))
     }
 
-    const addPayment = async () => {
-        const payload = {
-            records: [
-                {
-                    fields: {
-                        'Type': formData.type,
-                        'Name': formData.category,
-                        'Amount': formData.amount,
-                        'Date': formData.date,
-                        'Notes': formData.notes
-                    }
-                }
-            ]
-        }
-        
-        const options = {
-            method: 'POST',
-            headers: {
-                Authorization: token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        }
-
-        try {
-            const response = await fetch(paymentsUrl, options)
-            if (!response.ok) {
-                throw new Error('Eror posting data: ' + response.message)
-            }
-
-            const data = await response.json()
-            console.log(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     // Get payments to display
     useEffect(() => {
         const fetchPayments = async () => {
@@ -74,7 +44,7 @@ function PaymentsForm({ setPayments }) {
             try {
                 const resp = await fetch(encodeURI(paymentsUrl), options)
                 if (!resp.ok) {
-                throw new Error(resp.message)
+                throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
                 }
 
                 const data = await resp.json()
@@ -112,7 +82,7 @@ function PaymentsForm({ setPayments }) {
             try {
                 const resp = await fetch(encodeURI(debtsUrl), options)
                 if (!resp.ok) {
-                throw new Error(resp.message)
+                throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
                 }
 
                 const data = await resp.json()
@@ -133,14 +103,49 @@ function PaymentsForm({ setPayments }) {
         fetchDebts()
     }, [setDebts])
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
-        // Format date from YYYY-MM-DD to MM/DD/YYYY
-        const formatDate = (dateString) => {
-            const date = new Date(dateString)
-            return date.toLocaleDateString('en-US')
+    const addPayment = async (data) => {
+        const payload = {
+            records: [
+                {
+                    fields: {
+                        'Type': data.type,
+                        'Debt': [data.category],
+                        'Amount': Number(data.amount),
+                        'Date': data.date,
+                        'Name': data.notes
+                    }
+                }
+            ]
         }
+        
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }
+
+        try {
+            const response = await fetch(paymentsUrl, options)
+            if (!response.ok) {
+                const body = await response.text();
+                console.error('Error posting data:', response.status, body);
+                throw new Error('Error posting data');
+            }
+
+            const responseData = await response.json()
+            console.log('Payment added successfully:', responseData)
+            return responseData
+        } catch (error) {
+            console.error('Error adding payment:', error)
+            throw error
+        }
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
 
         const newItem = {
             'Tipo': formData.type,
@@ -150,9 +155,15 @@ function PaymentsForm({ setPayments }) {
             'Notas': formData.notes
         }
 
+        // Update local state immediately so table updates
         setPayments(prev => [...prev, newItem])
 
-        // Reset form
+        try {
+            // Send to Airtable with current form data
+            console.log('Form Data: ', formData)
+            await addPayment(formData)
+
+            // Reset form only after successful API call
         setFormData({
             type: 'Bill',
             category: '',
@@ -160,6 +171,11 @@ function PaymentsForm({ setPayments }) {
             date: '',
             notes: ''
         })
+        } catch (error) {
+            console.error('Error adding payment:', error)
+            // Remove from local state if API call failed
+            setPayments(prev => prev.filter(item => item !== newItem))
+        }
     }
 
     return (
@@ -179,28 +195,32 @@ function PaymentsForm({ setPayments }) {
                     </select>
                 </div>
 
-                {formData.type === 'Deuda' ? (
-                    <div className={styles.formItem}>
-                        <label htmlFor="debtId">Deuda</label>
+                <div className={styles.formItem}>
+                    <label htmlFor="category">
+                        {formData.type === 'Deuda' ? 'Deuda' : 'Bill'}
+                    </label>
                         <select
-                            id="debtId"
+                            id="category"
+                            name="category"
+                            value={formData.category}
                             onChange={handleInputChange}
                         >
-                            {debts.map((debt) => (
-                                <option key={debt.id} value={debt.id}>
-                                    {debt.name}
-                                </option>
-                            ))}
+                            <option value="">...</option>
+                            {formData.type === 'Deuda' ? (
+                                debts.map((debt) => (
+                                    <option key={debt.id} value={debt.id}>
+                                        {debt.name}
+                                    </option>
+                                ))
+                            ) : (
+                                bills.map((bill) => (
+                                    <option key={bill.id} value={bill.id}>
+                                        {bill.name}
+                                    </option>
+                                ))
+                            )}
                         </select>
                     </div>
-                ) : (
-                    <div className={styles.formItem}>
-                        <label htmlFor="category">Categoría</label>
-                        <select>
-                            <option>Coming Soon!</option>
-                        </select>
-                    </div>
-                )}
 
                 <div className={styles.formItem}>
                     <label htmlFor="amount">Cantidad</label>
