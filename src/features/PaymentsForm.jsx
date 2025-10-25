@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styles from './PaymentsForm.module.css'
 
 const paymentsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_PAYMENTS_TABLE}`
@@ -20,13 +20,22 @@ function PaymentsForm({ setPayments, debtsUrl, token }) {
         notes: ''
     })
 
-    const handleInputChange = (e) => {
+    const handleInputChange = useCallback((e) => {
         const { name, value } = e.target
-        setFormData(prev => ({
+        setFormData(prev => {
+            const newData = {
             ...prev,
             [name]: value
-        }))
-    }
+            }
+
+            // Clear category when type changes to avoid invalid selections
+            if (name === 'type') {
+                newData.category = ''
+            }
+
+            return newData
+        })
+    }, [])
 
     // Get debts to display
     useEffect(() => {
@@ -46,7 +55,6 @@ function PaymentsForm({ setPayments, debtsUrl, token }) {
                 }
 
                 const data = await resp.json()
-                console.log(data)
 
                 const fetchedDebts = data.records.map((record) => {
                     const debt = {

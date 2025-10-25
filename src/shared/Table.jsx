@@ -1,32 +1,35 @@
 import styles from './Table.module.css'
 
-function Table({ title, columns, data = [] }) {
+function Table({ title, columns, data = [], children }) {
     return (
         <>
             <h2 className={styles.tableTitle}>{title}</h2>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        {columns.map((column, index) => (
-                            <th key={index}>{column}</th>
+                        {columns.map((column) => (
+                            <th key={`header-${column}`}>{column}</th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
                     {data.length > 0 ? (
-                        data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {Object.values(row).map((cell, cellIndex) => (
-                                    <td key={cellIndex}>
-                                        {cell}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))
+                        data.map((row, rowIndex) => {
+                            const rowId = row.id || row.Nombre || `row-${rowIndex}`;
+                            return (
+                                <tr key={rowId}>
+                                    {Object.entries(row).map(([columnName, cellValue]) => (
+                                        <td key={`${rowId}-${columnName}`}>
+                                            {cellValue}
+                                        </td>
+                                    ))}
+                                </tr>
+                            );
+                        })
                     ) : (
                         <tr>
                             <td colSpan={columns.length} style={{ textAlign: 'center', padding: '2rem' }}>
-                                No data available
+                                {children || 'No data available'}
                             </td>
                         </tr>
                     )}
