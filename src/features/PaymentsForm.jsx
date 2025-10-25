@@ -31,7 +31,7 @@ function PaymentsForm({ setPayments }) {
             'Tipo': formData.type,
             'Categoría': formData.category,
             'Cantidad': formData.amount,
-            'Fecha Debida': formatDate(formData.date),
+            'Fecha de Pago': formatDate(formData.date),
             Notas: formData.notes
         }
 

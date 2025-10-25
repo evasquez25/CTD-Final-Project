@@ -3,7 +3,7 @@ import PaymentsForm from '../features/PaymentsForm'
 import { useState } from 'react'
 
 function Payments() {
-    const paymentColumns = ['Tipo', 'Categoría', 'Cantidad', 'Fecha Debida', 'Notas']
+    const paymentColumns = ['Tipo', 'Categoría', 'Cantidad', 'Fecha de Pago', 'Notas']
     const [payments, setPayments] = useState([])
 
     return (
