@@ -1,14 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styles from './PaymentsForm.module.css'
 
+const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_PAYMENTS_TABLE}`
+const token = `Bearer ${import.meta.env.VITE_PAT}`
+
 function PaymentsForm({ setPayments }) {
+    const [debts, setDebts] = useState([])  // [{id, name}]
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
         amount: '',
         date: '',
-        notes: ''
+        notes: '',
+        debtId: ''
     })
+
+    const encodeUrl = useCallback(() => {
+        return encodeURI(`${url}`)
+    }, [])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
@@ -17,6 +26,78 @@ function PaymentsForm({ setPayments }) {
             [name]: value
         }))
     }
+
+    const addPayment = async () => {
+        const payload = {
+            records: [
+                {
+                    fields: {
+                        'Tipo': formData.type,
+                        'Categoría': formData.category,
+                        'Cantidad': formData.amount,
+                        'Fecha de Pago': formData.date,
+                        'Notas': formData.notes
+                    }
+                }
+            ]
+        }
+        
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }
+
+        try {
+            const response = await fetch(url, options)
+            if (!response.ok) {
+                throw new Error('Eror posting data: ' + response.message)
+            }
+
+            const data = await response.json()
+            console.log(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    // Get payments to display
+    useEffect(() => {
+        const fetchPayments = async () => {
+            const options = {
+                method: 'GET',
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            try {
+                const resp = await fetch(encodeUrl(), options)
+                if (!resp.ok) {
+                throw new Error(resp.message)
+                }
+
+                const data = await resp.json()
+                console.log(data)
+
+                const fetchedPayments = data.records.map((record) => {
+                    const payment = {
+                        id: record.id,
+                        ...record.fields
+                    }
+                    return payment
+                })
+                setPayments(fetchedPayments)
+            } catch(err) {
+                console.error(err)
+            }
+        }
+        fetchPayments()
+    }, [encodeUrl])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -28,10 +109,10 @@ function PaymentsForm({ setPayments }) {
         }
 
         const newItem = {
-            'Tipo': formData.type,
-            'Categoría': formData.category,
-            'Cantidad': formData.amount,
-            'Fecha de Pago': formatDate(formData.date),
+            'Type': formData.type,
+            'Debt': formData.category,
+            'Amount': formData.amount,
+            'Date': formatDate(formData.date),
             Notas: formData.notes
         }
 
