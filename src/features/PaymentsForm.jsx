@@ -11,7 +11,7 @@ function formatDate(dateString) {
 
 function PaymentsForm({ setPayments, debtsUrl, token }) {
     const [debts, setDebts] = useState([])  // [{id, name}]
-    const [bills, setBills] = useState([{id: '123', name: 'Coming Soon!'}])  // [{id, name}]
+    const [bills] = useState([{id: '123', name: 'Coming Soon!'}])  // [{id, name}]
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
