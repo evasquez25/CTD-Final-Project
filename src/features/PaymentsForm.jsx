@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './PaymentsForm.module.css'
 
-const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_PAYMENTS_TABLE}`
+const paymentsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_PAYMENTS_TABLE}`
+const debtsUrl = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_DEBTS_TABLE}`
 const token = `Bearer ${import.meta.env.VITE_PAT}`
 
 function PaymentsForm({ setPayments }) {
+    const [debts, setDebts] = useState([])  // [{id, name}]
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
@@ -12,10 +14,6 @@ function PaymentsForm({ setPayments }) {
         date: '',
         notes: ''
     })
-
-    const encodeUrl = useCallback(() => {
-        return encodeURI(`${url}`)
-    }, [])
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
@@ -50,7 +48,7 @@ function PaymentsForm({ setPayments }) {
         }
 
         try {
-            const response = await fetch(url, options)
+            const response = await fetch(paymentsUrl, options)
             if (!response.ok) {
                 throw new Error('Eror posting data: ' + response.message)
             }
@@ -74,7 +72,7 @@ function PaymentsForm({ setPayments }) {
             }
 
             try {
-                const resp = await fetch(encodeUrl(), options)
+                const resp = await fetch(encodeURI(paymentsUrl), options)
                 if (!resp.ok) {
                 throw new Error(resp.message)
                 }
@@ -98,7 +96,42 @@ function PaymentsForm({ setPayments }) {
             }
         }
         fetchPayments()
-    }, [encodeUrl, setPayments])
+    }, [setPayments])
+
+    // Get debts to display
+    useEffect(() => {
+        const fetchDebts = async () => {
+            const options = {
+                method: 'GET',
+                headers: {
+                    Authorization: token,
+                    'Content-Type': 'application/json'
+                }
+            }
+
+            try {
+                const resp = await fetch(encodeURI(debtsUrl), options)
+                if (!resp.ok) {
+                throw new Error(resp.message)
+                }
+
+                const data = await resp.json()
+                console.log(data)
+
+                const fetchedDebts = data.records.map((record) => {
+                    const debt = {
+                        id: record.id,
+                        name: record.fields.Name
+                    }
+                    return debt
+                })
+                setDebts(fetchedDebts)
+            } catch(err) {
+                console.error(err)
+            }
+        }
+        fetchDebts()
+    }, [setDebts])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -146,17 +179,28 @@ function PaymentsForm({ setPayments }) {
                     </select>
                 </div>
 
-                <div className={styles.formItem}>
-                    <label htmlFor="category">Categoría</label>
-                    <select
-                        id="category"
-                        name="category"
-                        value={formData.category}
-                        onChange={handleInputChange}
-                    >
-                        
-                    </select>
-                </div>
+                {formData.type === 'Deuda' ? (
+                    <div className={styles.formItem}>
+                        <label htmlFor="debtId">Deuda</label>
+                        <select
+                            id="debtId"
+                            onChange={handleInputChange}
+                        >
+                            {debts.map((debt) => (
+                                <option key={debt.id} value={debt.id}>
+                                    {debt.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                ) : (
+                    <div className={styles.formItem}>
+                        <label htmlFor="category">Categoría</label>
+                        <select>
+                            <option>Coming Soon!</option>
+                        </select>
+                    </div>
+                )}
 
                 <div className={styles.formItem}>
                     <label htmlFor="amount">Cantidad</label>
