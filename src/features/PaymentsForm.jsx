@@ -5,14 +5,12 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${impor
 const token = `Bearer ${import.meta.env.VITE_PAT}`
 
 function PaymentsForm({ setPayments }) {
-    const [debts, setDebts] = useState([])  // [{id, name}]
     const [formData, setFormData] = useState({
         type: 'Bill',
         category: '',
         amount: '',
         date: '',
-        notes: '',
-        debtId: ''
+        notes: ''
     })
 
     const encodeUrl = useCallback(() => {
@@ -32,11 +30,11 @@ function PaymentsForm({ setPayments }) {
             records: [
                 {
                     fields: {
-                        'Tipo': formData.type,
-                        'Categoría': formData.category,
-                        'Cantidad': formData.amount,
-                        'Fecha de Pago': formData.date,
-                        'Notas': formData.notes
+                        'Type': formData.type,
+                        'Name': formData.category,
+                        'Amount': formData.amount,
+                        'Date': formData.date,
+                        'Notes': formData.notes
                     }
                 }
             ]
@@ -86,8 +84,11 @@ function PaymentsForm({ setPayments }) {
 
                 const fetchedPayments = data.records.map((record) => {
                     const payment = {
-                        id: record.id,
-                        ...record.fields
+                        'Tipo': record.fields.Type,
+                        'Categoría': record.fields.Name,
+                        'Cantidad': record.fields.Amount,
+                        'Fecha de Pago': record.fields.Date,
+                        'Notas': record.fields.Name
                     }
                     return payment
                 })
@@ -97,7 +98,7 @@ function PaymentsForm({ setPayments }) {
             }
         }
         fetchPayments()
-    }, [encodeUrl])
+    }, [encodeUrl, setPayments])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -109,11 +110,11 @@ function PaymentsForm({ setPayments }) {
         }
 
         const newItem = {
-            'Type': formData.type,
-            'Debt': formData.category,
-            'Amount': formData.amount,
-            'Date': formatDate(formData.date),
-            Notas: formData.notes
+            'Tipo': formData.type,
+            'Categoría': formData.category,
+            'Cantidad': formData.amount,
+            'Fecha de Pago': formatDate(formData.date),
+            'Notas': formData.notes
         }
 
         setPayments(prev => [...prev, newItem])
@@ -147,15 +148,14 @@ function PaymentsForm({ setPayments }) {
 
                 <div className={styles.formItem}>
                     <label htmlFor="category">Categoría</label>
-                    <input
-                        type="text"
+                    <select
                         id="category"
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
-                        placeholder="Ej: Renta, Electricidad, etc."
-                        required
-                    />
+                    >
+                        
+                    </select>
                 </div>
 
                 <div className={styles.formItem}>
